@@ -41,6 +41,23 @@ namespace DapperCrud.Controllers
             return Ok(await selectAllHeroes(connection));
         }
 
+        [HttpPut]
+        public async Task<ActionResult<List<Hero>>> UpdateHero(Hero hero)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await connection.ExecuteAsync("update Hero set NameHero=@NameHero,FirstDate=@FirstDate,LastName=@LastName,place=@Place where Id=@Id", hero);
+            return Ok(await selectAllHeroes(connection));
+        }
+
+        [HttpDelete("HeroId")]
+        public async Task<ActionResult<List<Hero>>> DeleteHero(int HeroId)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+            var hero = await connection.QueryFirstAsync<Hero>("delete Hero where id= @id",
+                new { Id = HeroId });
+            return Ok(await selectAllHeroes(connection));
+        }
+
         private static async Task<IEnumerable<Hero>> selectAllHeroes(SqlConnection connection)
         {
             return await connection.QueryAsync<Hero>("select * from Hero");
