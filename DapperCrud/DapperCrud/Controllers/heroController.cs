@@ -33,6 +33,13 @@ namespace DapperCrud.Controllers
                 new { Id = HeroId });
             return Ok(hero);
         }
+        [HttpPost]
+        public async Task<ActionResult<List<Hero>>> CreateHero(Hero hero)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+            await connection.ExecuteAsync("insert into Hero(NameHero,FirstDate,LastName,place)values(@NameHero,@FirstDate,@LastName,@Place)",hero);
+            return Ok(await selectAllHeroes(connection));
+        }
 
         private static async Task<IEnumerable<Hero>> selectAllHeroes(SqlConnection connection)
         {
